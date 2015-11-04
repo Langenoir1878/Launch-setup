@@ -20,7 +20,7 @@
 declare -a instanceARR
 
 # 3. mapfile (updated Nov 4, 2015)
-mapfile -t instanceARR < <(aws ec2 run-instances --image-id $1 --count $2 --instance-type $3 --security-group-ids $4 --subnet-id $5 --key-name $6  --associate-public-ip-address --iam-instance-profile $7 --user-data file://../Environment-setup/install-webserver.sh --output table | grep InstanceId | sed "s/|//g" | tr -d ' ' | sed "s/InstanceId//g"--debug)
+mapfile -t instanceARR < <(aws ec2 run-instances --image-id $1 --count $2 --instance-type $3 --security-group-ids $4 --subnet-id $5 --key-name $6  --associate-public-ip-address --iam-instance-profile Name=$7 --user-data file://../Environment-setup/install-webserver.sh --output table | grep InstanceId | sed "s/|//g" | tr -d ' ' | sed "s/InstanceId//g" --debug)
 
 echo ${instanceARR[@]}
 
@@ -30,7 +30,7 @@ aws ec2 wait instance-running --instance-ids ${instanceARR[@]}
 echo "instances are running."
 
 # 5. create ELB (updated 11/02/2015, Nov 4, 2015. dif *** ???security-group representations for ec2 and elb?)
-ELBURL = (`aws elb create-load-balancer --load-balancer-name SIMMON-THE-CAT --listeners Protocol=HTTP,LoadBalancerPort=80,InstanceProtocol=HTTP,InstancePort=80 --security-groups $4 --subnets $5 --output=text`)
+ELBURL=(`aws elb create-load-balancer --load-balancer-name SIMMON-THE-CAT --listeners Protocol=HTTP,LoadBalancerPort=80,InstanceProtocol=HTTP,InstancePort=80 --security-groups $4 --subnets $5 --output=text`) 
 echo $ELBURL
 
 #sleep
