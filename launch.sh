@@ -1,4 +1,4 @@
-# LAST UPDATED: NOV 4, 2015
+# LAST UPDATED: NOV 6, 2015
 # Revised on OCT 25, 13:12:11 PM
 # Yiming Zhang
 # UPDATED INSTRUCTIONS UPON LAUNCHING NOV 4th, 2015
@@ -17,6 +17,7 @@
 ./cleanup.sh
 
 # 2. declare an array in bash
+
 declare -a instanceARR
 
 # 3. mapfile (updated Nov 4, 2015)
@@ -45,8 +46,8 @@ aws elb register-instances-with-load-balancer --load-balancer-name SIMMON-THE-CA
 aws elb configure-health-check --load-balancer-name SIMMON-THE-CAT --health-check Target=HTTP:80/index.html,Interval=30,UnhealthyThreshold=2,HealthyThreshold=2,Timeout=3
 
 # wait additional 1 min
-echo -e "\nOpening the ELB in 1 minute in web browser"
-for i in {0..60}; do echo -ne '.'; sleep 1; done
+#echo -e "\nOpening the ELB in 1 minute in web browser"
+#for i in {0..60}; do echo -ne '.'; sleep 1; done
 
 
 # 8. launch configuration (updated Nov 4, 2015)
@@ -56,6 +57,11 @@ aws autoscaling create-launch-configuration --launch-configuration-name SIMMON-C
 # 9. auto-scaling (updated Nov 4, 2015)
 echo -e "\nCreating the auto scaling group"
 aws autoscaling create-auto-scaling-group --auto-scaling-group-name SIMMON-AUTO-SCALE --launch-configuration-name SIMMON-CONFIG-LAUNCH --load-balancer-name SIMMON-THE-CAT --health-check-type ELB --min-size 1 --max-size 3 --desired-capacity 2 --default-cooldown 600 --health-check-grace-period 120 --vpc-zone-identifier $5
+
+# secure the count of total instances
+# ref: http://docs.aws.amazon.com/AutoScaling/latest/APIReference/API_PutScalingPolicy.html
+aws autoscaling put-scaling-policy --auto-scaling-group-name SIMMON-AUTO-SCALE --policy-name SIMMON-SCALE-POLICY --scaling-adjustment 1 --adjustment-type ExactCapacity
+
 
 # 10. rds instance 
 echo -e "\nCreating database"
@@ -79,5 +85,7 @@ do
     fi  
 done
 
-
+# 11 cloudwatch metrics (updatd Nov 6, 2015)
+# ref: http://docs.aws.amazon.com/AmazonCloudWatch/latest/DeveloperGuide/UsingAlarmActions.html#UsingCLIorAPI
+#aws cloudwatch put-metric-alarm --alarm-name SIMMON-ALARM --alarm-description "Terminate the instance when it is idle for a day" --namespace "AWS/EC2" --dimensions Name=InstanceId,Value="i-abc123" --statistic Average  --metric-name CPUUtilization --comparison-operator LessThanThreshold --threshold 1 --period 86400 --evaluation-periods 4 -- alarm-actions arn:aws:automate:us-east-1:ec2:terminate
 
