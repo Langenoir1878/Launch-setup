@@ -39,6 +39,11 @@ echo -e "\nELB created, sleep 7 seconds"
 for i in {0..7}; do echo -ne '.'; sleep 1; done
 echo -e "\n"
 
+# 5.5 (Nov 7, 2015 cookie stickyness session)
+aws elb create-lb-cookie-stickiness-policy --load-balancer-name SIMMON-THE-CAT --policy-name SIMMON-COOKIE-POLICY --cookie-expiration-period 60
+aws elb set-load-balancer-policies-of-listener --load-balancer-name SIMMON-THE-CAT --load-balancer-port 443 --policy-names SIMMON-COOKIE-POLICY
+
+
 # 6. register instances with ELB (updated 11/02/2015)
 aws elb register-instances-with-load-balancer --load-balancer-name SIMMON-THE-CAT --instances ${instanceARR[@]}
 
