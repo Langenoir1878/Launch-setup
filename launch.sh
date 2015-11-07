@@ -85,7 +85,13 @@ do
     fi  
 done
 
+#wait additional 3 min for creating the database
+echo -e "\nPlease wait 3 min, creating database : SIMMON-THE-CAT"
+for i in {0..180}; do echo -ne '. '; sleep 1; done
+
+
+
 # 11 cloudwatch metrics (updatd Nov 6, 2015)
 # ref: http://docs.aws.amazon.com/AmazonCloudWatch/latest/DeveloperGuide/UsingAlarmActions.html#UsingCLIorAPI
-#aws cloudwatch put-metric-alarm --alarm-name SIMMON-ALARM --alarm-description "Terminate the instance when it is idle for a day" --namespace "AWS/EC2" --dimensions Name=InstanceId,Value="i-abc123" --statistic Average  --metric-name CPUUtilization --comparison-operator LessThanThreshold --threshold 1 --period 86400 --evaluation-periods 4 -- alarm-actions arn:aws:automate:us-east-1:ec2:terminate
+aws cloudwatch put-metric-alarm --alarm-name SIMMON-ALARM --alarm-description "Terminate the instance when it is idle for a day" --namespace "AWS/EC2" --dimensions Name=InstanceId,Value="i-abc123" --statistic Average  --metric-name CPUUtilization --comparison-operator LessThanThreshold --threshold 1 --period 86400 --evaluation-periods 4 -- alarm-actions arn:aws:automate:us-east-1:ec2:terminate
 
