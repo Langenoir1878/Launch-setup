@@ -86,7 +86,8 @@ do
     echo "SIMMON-THE-CAT-DB exists"
     else
     	# create the database instance, aws rds
-    	aws rds create-db-instance --db-instance-identifier SIMMON-THE-CAT-DB --db-instance-class db.t1.micro --engine MySQL --master-username LN1878 --master-user-password hesaysmeow --allocated-storage 5
+    	#updated on Nov 3, added --de-name simmoncatdb for testing
+    	aws rds create-db-instance --db-name simmoncatdb --db-instance-identifier SIMMON-THE-CAT-DB --db-instance-class db.t1.micro --engine MySQL --master-username LN1878 --master-user-password hesaysmeow --allocated-storage 5
     fi  
 done
 
