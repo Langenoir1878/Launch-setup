@@ -40,8 +40,8 @@ for i in {0..7}; do echo -ne '.'; sleep 1; done
 echo -e "\n"
 
 # 5.5 (Nov 7, 2015 cookie stickyness session)
-aws elb create-lb-cookie-stickiness-policy --load-balancer-name SIMMON-THE-CAT --policy-name SIMMON-COOKIE-POLICY --cookie-expiration-period 60
-aws elb set-load-balancer-policies-of-listener --load-balancer-name SIMMON-THE-CAT --load-balancer-port 443 --policy-names SIMMON-COOKIE-POLICY
+#aws elb create-lb-cookie-stickiness-policy --load-balancer-name SIMMON-THE-CAT --policy-name SIMMON-COOKIE-POLICY --cookie-expiration-period 60
+#aws elb set-load-balancer-policies-of-listener --load-balancer-name SIMMON-THE-CAT --load-balancer-port 443 --policy-names SIMMON-COOKIE-POLICY
 
 
 # 6. register instances with ELB (updated 11/02/2015)
@@ -81,19 +81,30 @@ LENGTH=${#dbInstanceARR[@]}
 
 for (( i=0; i<=${LENGTH}; i++));
 do
-   	if [[ ${dbInstanceARR[i]} == "SIMMON-THE-CAT-DB" ]]
+   	if [[ ${dbInstanceARR[i]} == "simmon-the-cat-db" ]]
     then 
-    echo "SIMMON-THE-CAT-DB exists"
+    echo "simmon-the-cat-db exists"
     else
     	# create the database instance, aws rds
-    	#updated on Nov 3, added --de-name simmoncatdb for testing
-    	aws rds create-db-instance --db-name simmoncatdb --db-instance-identifier SIMMON-THE-CAT-DB --db-instance-class db.t1.micro --engine MySQL --master-username LN1878 --master-user-password hesaysmeow --allocated-storage 5
+    	#updated on Nov 3, added --db-name simmoncatdb for testing
+    	aws rds create-db-instance --db-name simmoncatdb --db-instance-identifier simmon-the-cat-db --db-instance-class db.t1.micro --engine MySQL --master-username LN1878 --master-user-password hesaysmeow --allocated-storage 5 
+    	# below added for testing revised ports 
+    	# Nov 17th, 2015 @IIT-GL 2 FL
+    	#--vpc-security-group-ids sg-c0f45da6  --availability-zone us-east-1e
     fi  
 done
 
 #wait additional 3 min for creating the database
-echo -e "\nPlease wait 3 min, creating database : SIMMON-THE-CAT"
-for i in {0..180}; do echo -ne '. '; sleep 1; done
+#echo -e "\nPlease wait 3 min, creating database : SIMMON-THE-CAT"
+#for i in {0..180}; do echo -ne '. '; sleep 1; done
+
+# Revised wait command for creating database
+# Date Revised: 08:25 AM, W, Nov 17th, 2015 @ IIT-GL 2 FL
+echo -e "\nPlease wait for a few minute, creating database : simmoncatdb . . ."
+
+aws rds wait db-instance-available --db-instance-identifier simmon-the-cat-db
+
+echo -e "\n Finished creating the database."
 
 
 
